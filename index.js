@@ -2,6 +2,7 @@ let config = {
     type: Phaser.AUTO,
     width: 800,
     height: 600,
+    
     physics: {
         default: 'arcade',
         arcade: {
@@ -15,9 +16,9 @@ let config = {
         update: update
     }
 };
-
 let player;
 let coins;
+let coinSound;
 let platforms;
 let cursors;
 let score = 0;
@@ -25,14 +26,19 @@ let scoreText;
 
 let game = new Phaser.Game(config);
 
+
 function preload() {
-    this.load.image('sky', 'assets/sky.png');
-    this.load.image('ground', 'assets/platform.png');
-    this.load.spritesheet('dude', 'assets/elvisRun.png', { frameWidth: 32, frameHeight: 38 });
-    this.load.spritesheet('coin', 'assets/coinSheet.png', { frameWidth: 8, frameHeight: 8 });
+    this.load.image('sky', 'assets/imgs/sky.png');
+    this.load.image('ground', 'assets/imgs/platform.png');
+    this.load.spritesheet('dude', 'assets/spriteSheet/elvisRun.png', { frameWidth: 32, frameHeight: 38 });
+    this.load.spritesheet('coin', 'assets/spriteSheet/coinSheet.png', { frameWidth: 8, frameHeight: 8 });
+    this.load.audio('coinSound', 'assets/audio/coinPickUp.mp3');
 }
 
 function create() {
+    coinSound = this.sound.add('coinSound');
+    //game.sound.setDecodedCallback([coinSound], start, this);
+
     this.add.image(400, 300, 'sky');
 
     platforms = this.physics.add.staticGroup();
@@ -124,13 +130,13 @@ function update() {
 
 function collectCoin(player,coin){
     coin.disableBody(true, true);
-
+    coinSound.play();
     score+= 10;
     scoreText.setText(`Score: ${score}`);
     console.log(coins.countActive());
 }
 
-function creteCoins(){
+function createCoins(){
     coins.children.iterate(function (child) {
 
         child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
